@@ -1,0 +1,1828 @@
+openapi: 3.0.0
+info:
+  title: Alldebrid API
+  description: Welcome to the Alldebrid API! You can use this API to access various Alldebrid services from custom applications or scripts.
+  version: 4.0.0
+servers:
+  - url: 'https://api.alldebrid.com'
+    description: 'Optional server description, e.g. Main (production) server'
+paths:
+  /v4/hosts:
+    get:
+      summary: Use this endpoint to retrieve informations about what hosts we support.
+      description: Use this endpoint to retrieve informations about what hosts we support and all related informations about it.
+      parameters:
+        - in: query
+          name: agent
+          schema:
+            type: string
+            default: open-alldebrid
+          required: true
+          description: Your software user-agent.
+        - in: query
+          name: hostOnly
+          schema:
+            type: string
+          required: false
+          description: Endpoint will only return "hosts" data
+      responses:
+        '200':
+          description: Use this endpoint to retrieve informations about what hosts we support and all related informations about it.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      hosts:
+                        type: object
+                        additionalProperties:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              example: uptobox
+                            type:
+                              type: string
+                              example: premium
+                            domains:
+                              type: array
+                              items:
+                                type: string
+                                example: uptobox.com
+                            regexp:
+                              type: string
+                              example: '(uptobox\.com/[0-9a-zA-Z]+(/.*)?)|uptostream\.com/([0-9a-zA-Z]{12})'
+                            regexps:
+                              type: array
+                              items:
+                                type: string
+                                example: 'uptostream\\.com/iframe/([0-9a-zA-Z]{12})'
+                            status:
+                              type: boolean
+                      streams:
+                        type: object
+                        additionalProperties:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              example: youtube
+                            type:
+                              type: string
+                              example: free
+                            domains:
+                              type: array
+                              items:
+                                type: string
+                                example: youtube.be
+                            regexp:
+                              type: string
+                              example: 'https?:\/\/(?:www\\.)?youtube\\.com\/show\/(?P<id>[^?#]*)", "https?:\/\/(?:www\\.)?youtube\\.com\/feed\/history|:ythistory'
+                            regexps:
+                              type: array
+                              items:
+                                type: string
+                                example: 'https?:\/\/(?:www\\.)?youtube\\.com\/show\/(?P<id>[^?#]*)'
+                            status:
+                              type: boolean
+                      redirectors:
+                        type: object
+                        additionalProperties:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              example: dlprotecte
+                            type:
+                              type: string
+                              example: premium
+                            domains:
+                              type: array
+                              items:
+                                type: string
+                                example: dl-protecte.com
+                            regexp:
+                              type: string
+                              example: '(dl-protecte\.com/[0-9a-zA-Z]+)|(protect-lien\.com/[0-9a-zA-Z]+)|dl-protecte\.org/([0-9a-zA-Z]+)'
+                            regexps:
+                              type: array
+                              items:
+                                type: string
+                                example: 'uptostream\\.com/iframe/([0-9a-zA-Z]{12})'
+                            status:
+                              type: boolean
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        example: AUTH_MISSING_APIKEY
+                      message:
+                        type: string
+                        example: The auth apikey was not sent
+    parameters: []
+  /v4/hosts/domains:
+    get:
+      summary: Use this endpoint to only retrieve the list of supported hosts domains and redirectors as an array.
+      description: Use this endpoint to only retrieve the list of supported hosts domains and redirectors as an array. This will also include any alternative domain the hosts or redirectors have. Please use regexps availables in /hosts or /user/hosts endpoints to validate supported links.
+      parameters:
+        - in: query
+          name: agent
+          schema:
+            type: string
+            default: open-alldebrid
+          required: true
+          description: Your software user-agent.
+      responses:
+        '200':
+          description: Use this endpoint to retrieve informations about what hosts we support and all related informations about it.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      hosts:
+                        type: array
+                        items:
+                          type: string
+                          example: uptobox.com
+                      streams:
+                        type: array
+                        items:
+                          type: string
+                          example: youtube.com
+                      redirectors:
+                        type: array
+                        items:
+                          type: string
+                          example: dl-protecte.com
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        example: AUTH_MISSING_APIKEY
+                      message:
+                        type: string
+                        example: The auth apikey was not sent
+    parameters: []
+  /v4/hosts/priority:
+    get:
+      summary: 'Not all hosts are created equal, so some hosts are more limited than other.'
+      description: 'Use this endpoint to retrieve an ordered list of main domain of hosts, from more open to more restricted.'
+      parameters:
+        - in: query
+          name: agent
+          schema:
+            type: string
+            default: open-alldebrid
+          required: true
+          description: Your software user-agent.
+      responses:
+        '200':
+          description: Use this endpoint to retrieve informations about what hosts we support and all related informations about it.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      hosts:
+                        type: object
+                        additionalProperties:
+                          type: integer
+                          format: int64
+                          example: 4
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        example: AUTH_MISSING_APIKEY
+                      message:
+                        type: string
+                        example: The auth apikey was not sent
+    parameters: []
+  /v4/user:
+    get:
+      summary: Use this endpoint to get user informations.
+      description: Use this endpoint to get user informations.
+      security:
+        - apikey: []
+      parameters:
+        - in: query
+          name: apikey
+          schema:
+            type: string
+          required: false
+          description: Deprecated User apikey (Use Bearer Auth in header).
+        - in: query
+          name: agent
+          schema:
+            type: string
+            default: open-alldebrid
+          required: true
+          description: Your software user-agent.
+      responses:
+        '200':
+          description: Use this endpoint to retrieve informations about what hosts we support and all related informations about it.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          username:
+                            type: string
+                            example: MyUsername
+                          email:
+                            type: string
+                            example: some.email@example.com
+                          isPremium:
+                            type: boolean
+                          isSubscribed:
+                            type: boolean
+                          isTrial:
+                            type: boolean
+                          premiumUntil:
+                            type: integer
+                            format: int64
+                            example: 1545757200
+                          lang:
+                            type: string
+                            example: fr
+                          preferedDomain:
+                            type: string
+                            example: fr
+                          fidelityPoints:
+                            type: integer
+                            format: int64
+                            example: 200
+                          limitedHostersQuotas:
+                            type: object
+                            additionalProperties:
+                              type: integer
+                              format: int64
+                              example: 3000
+                          notifications:
+                            type: array
+                            items:
+                              type: string
+                              example: FREEDAYS_USED_QUOTA
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        example: AUTH_MISSING_APIKEY
+                      message:
+                        type: string
+                        example: The auth apikey was not sent
+    parameters: []
+  /v4/user/hosts:
+    get:
+      summary: This endpoint retrieves a complete list of all available hosts for this user.
+      description: 'This endpoint retrieves a complete list of all available hosts for this user. Depending of the account subscription status (free user, trial mode, premium user), the list and limitations will vary. The limits and quota are updated in real time. Use this page to have an up-to-date list of service the user can use on Alldebrid. Quotas will reset every day for premium users.'
+      security:
+        - apikey: []
+      parameters:
+        - in: query
+          name: apikey
+          schema:
+            type: string
+          required: false
+          description: Deprecated User apikey (Use Bearer Auth in header).
+        - in: query
+          name: agent
+          schema:
+            type: string
+            default: open-alldebrid
+          required: true
+          description: Your software user-agent.
+        - in: query
+          name: hostOnly
+          schema:
+            type: string
+          required: false
+          description: Endpoint will only return "hosts" data
+      responses:
+        '200':
+          description: This endpoint retrieves a complete list of all available hosts for this user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      hosts:
+                        type: object
+                        additionalProperties:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              example: uptobox
+                            type:
+                              type: string
+                              example: premium
+                            domains:
+                              type: array
+                              items:
+                                type: string
+                                example: uptobox.com
+                            regexp:
+                              type: string
+                              example: '(uptobox\.com/[0-9a-zA-Z]+(/.*)?)|uptostream\.com/([0-9a-zA-Z]{12})'
+                            regexps:
+                              type: array
+                              items:
+                                type: string
+                                example: 'uptostream\\.com/iframe/([0-9a-zA-Z]{12})'
+                            status:
+                              type: boolean
+                      streams:
+                        type: object
+                        additionalProperties:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              example: youtube
+                            type:
+                              type: string
+                              example: free
+                            domains:
+                              type: array
+                              items:
+                                type: string
+                                example: youtube.be
+                            regexp:
+                              type: string
+                              example: 'https?:\/\/(?:www\\.)?youtube\\.com\/show\/(?P<id>[^?#]*)", "https?:\/\/(?:www\\.)?youtube\\.com\/feed\/history|:ythistory'
+                            regexps:
+                              type: array
+                              items:
+                                type: string
+                                example: 'https?:\/\/(?:www\\.)?youtube\\.com\/show\/(?P<id>[^?#]*)'
+                            status:
+                              type: boolean
+                      redirectors:
+                        type: object
+                        additionalProperties:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              example: dlprotecte
+                            type:
+                              type: string
+                              example: premium
+                            domains:
+                              type: array
+                              items:
+                                type: string
+                                example: dl-protecte.com
+                            regexp:
+                              type: string
+                              example: '(dl-protecte\.com/[0-9a-zA-Z]+)|(protect-lien\.com/[0-9a-zA-Z]+)|dl-protecte\.org/([0-9a-zA-Z]+)'
+                            regexps:
+                              type: array
+                              items:
+                                type: string
+                                example: 'uptostream\\.com/iframe/([0-9a-zA-Z]{12})'
+                            status:
+                              type: boolean
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        example: AUTH_MISSING_APIKEY
+                      message:
+                        type: string
+                        example: The auth apikey was not sent
+    parameters: []
+  /v4/user/notification/clear:
+    get:
+      summary: This endpoint clears a user notification with its code.
+      description: This endpoint clears a user notification with its code. Current notifications codes can be retreive from the /user endpoint.
+      security:
+        - apikey: []
+      parameters:
+        - in: query
+          name: apikey
+          schema:
+            type: string
+          required: false
+          description: Deprecated User apikey (Use Bearer Auth in header).
+        - in: query
+          name: agent
+          schema:
+            type: string
+            default: open-alldebrid
+          required: true
+          description: Your software user-agent.
+        - in: query
+          name: code
+          schema:
+            type: string
+          required: true
+          description: Notification code to clear
+      responses:
+        '200':
+          description: This endpoint retrieves a complete list of all available hosts for this user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Notification was cleared
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        example: AUTH_MISSING_APIKEY
+                      message:
+                        type: string
+                        example: The auth apikey was not sent
+    parameters: []
+  /v4/link/infos:
+    get:
+      summary: Use this endpoint to retrieve informations about a link.
+      description: 'Use this endpoint to retrieve informations about a link. If it is in our systems, you''ll have the filename and size (if available). If the host is not supported or the link is down, an error will be returned for that link. This endpoint only support host links, not redirectors links. Use the /v4/link/redirector endpoint for this.'
+      security:
+        - apikey: []
+      parameters:
+        - in: query
+          name: apikey
+          schema:
+            type: string
+          required: false
+          description: Deprecated User apikey (Use Bearer Auth in header).
+        - in: query
+          name: agent
+          schema:
+            type: string
+            default: open-alldebrid
+          required: true
+          description: Your software user-agent.
+        - in: query
+          name: password
+          schema:
+            type: string
+          required: false
+          description: Link password (supported on uptobox / 1fichier).
+        - in: query
+          name: 'link[]'
+          description: The link or array of links you request informations about.
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: This endpoint retrieves a complete list of all available hosts for this user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      infos:
+                        description: Array of info objects
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            link:
+                              type: string
+                              example: 'https://uptobox.com/l1ub83vil5c3'
+                              description: Requested link
+                            filename:
+                              type: string
+                              example: ubuntu-18.04.1-server-amd64.iso
+                              description: Link's file filename.
+                            size:
+                              type: integer
+                              format: int64
+                              example: 699400192
+                              description: Link's file size in bytes.
+                            host:
+                              type: string
+                              example: uptobox
+                              description: Link host.
+                            hostDomain:
+                              type: string
+                              example: uptobox.com
+                              description: Host main domain
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        example: LINK_IS_MISSING
+                      message:
+                        type: string
+                        example: No link was sent
+    parameters: []
+  /v4/link/redirector:
+    get:
+      summary: Use this endpoint to retrieve links protected by a redirector or link protector.
+      description: Use this endpoint to retrieve links protected by a redirector or link protector.
+      security:
+        - apikey: []
+      parameters:
+        - in: query
+          name: apikey
+          schema:
+            type: string
+          required: false
+          description: Deprecated User apikey (Use Bearer Auth in header).
+        - in: query
+          name: agent
+          schema:
+            type: string
+            default: open-alldebrid
+          required: true
+          description: Your software user-agent.
+        - in: query
+          name: link
+          schema:
+            type: string
+          required: true
+          description: The redirector or protector link to extract links.
+      responses:
+        '200':
+          description: This endpoint retrieves a complete list of all available hosts for this user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      links:
+                        type: array
+                        description: Link(s) extracted.
+                        items:
+                          type: string
+                          example: 'http://uptobox.com/l1ub83vil5c3'
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        example: REDIRECTOR_NOT_SUPPORTED
+                      message:
+                        type: string
+                        example: Redirector not supported Redirector not supported
+    parameters: []
+  /v4/link/unlock:
+    get:
+      summary: This endpoint unlocks a given link.
+      description: 'This endpoint can return a delayed ID. In that case, you must follow the delayed link flow.'
+      security:
+        - apikey: []
+      parameters:
+        - in: query
+          name: apikey
+          schema:
+            type: string
+          required: false
+          description: Deprecated User apikey (Use Bearer Auth in header).
+        - in: query
+          name: agent
+          schema:
+            type: string
+            default: open-alldebrid
+          required: true
+          description: Your software user-agent.
+        - in: query
+          name: link
+          schema:
+            type: string
+          required: true
+          description: The redirector or protector link to extract links.
+        - in: query
+          name: password
+          schema:
+            type: string
+          required: false
+          description: Link password (supported on uptobox / 1fichier).
+      responses:
+        '200':
+          description: This endpoint retrieves a complete list of all available hosts for this user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      filename:
+                        type: string
+                        example: '[zza].Micmacs.à.tire-larigot.2009.1080p.x265.AC3.mkv'
+                      filesize:
+                        type: integer
+                        format: int64
+                        example: 1951233010
+                      host:
+                        type: string
+                        example: uptobox
+                      hostDomain:
+                        type: string
+                        example: uptobox.com
+                      id:
+                        type: string
+                        example: 2bifjkf54f6
+                      link:
+                        type: string
+                        example: 'https://d01vz3.debrid.it/dl/2bifjkf54f6/%5Bzza%5D.Micmacs.%C3%A0.tire-larigot.2009.1080p.x265.AC3.mkv'
+                      paws:
+                        type: boolean
+                      streams:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: hls
+                            ext:
+                              type: string
+                              example: m3u8
+                            quality:
+                              type: string
+                              example: 360
+                            filesize:
+                              type: integer
+                              format: int64
+                              example: 3433538
+                            proto:
+                              type: string
+                              example: https
+                            name:
+                              type: string
+                              example: m3u8
+                            link:
+                              type: string
+                              example: 'https://www43.uptostream.com/stream/54gwwydcf4/_m_main_0.m3u8'
+                            tb:
+                              type: number
+                              example: 130.621
+                            abr:
+                              type: integer
+                              format: int64
+                              example: 128
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        example: LINK_HOST_NOT_SUPPORTED
+                      message:
+                        type: string
+                        example: This link is not supported.
+    parameters: []
+  /v4/link/streaming:
+    get:
+      summary: The unlocking flow for streaming link is a bit more complex.
+      description: 'First hit the usual link/unlock endpoint. Two cases: Stream link has only one quality: downloading link is available immediately. OR Stream links has multiple qualities: you must select the desired quality to obtain a download link or delayed id by using the /v4/link/streaming endpoint. Depending of the stream website, you''ll either get a download link, or a delayed id (see Delayed link section for delayed links).'
+      security:
+        - apikey: []
+      parameters:
+        - in: query
+          name: apikey
+          schema:
+            type: string
+          required: false
+          description: Deprecated User apikey (Use Bearer Auth in header).
+        - in: query
+          name: agent
+          schema:
+            type: string
+            default: open-alldebrid
+          required: true
+          description: Your software user-agent.
+        - in: query
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The link ID you received from the /link/unlock call.
+        - in: query
+          name: stream
+          schema:
+            type: string
+          required: true
+          description: The stream ID you choosed from the stream qualities list returned by /link/unlock.
+      responses:
+        '200':
+          description: This endpoint retrieves a complete list of all available hosts for this user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      filename:
+                        type: string
+                        example: '[zza].Micmacs.à.tire-larigot.2009.1080p.x265.AC3.mkv'
+                      filesize:
+                        type: integer
+                        format: int64
+                        example: 1951233010
+                      host:
+                        type: string
+                        example: uptobox
+                      hostDomain:
+                        type: string
+                        example: uptobox.com
+                      id:
+                        type: string
+                        example: 2bifjkf54f6
+                      link:
+                        type: string
+                        example: 'https://d01vz3.debrid.it/dl/2bifjkf54f6/%5Bzza%5D.Micmacs.%C3%A0.tire-larigot.2009.1080p.x265.AC3.mkv'
+                      paws:
+                        type: boolean
+                      streams:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              example: 140
+                            ext:
+                              type: string
+                              example: mp3
+                            quality:
+                              type: string
+                              example: mp3
+                            filesize:
+                              type: integer
+                              format: int64
+                              example: 3433538
+                            proto:
+                              type: string
+                              example: https
+                            name:
+                              type: string
+                              example: null
+                            link:
+                              type: string
+                            tb:
+                              type: number
+                              example: 130.621
+                            abr:
+                              type: integer
+                              format: int64
+                              example: 128
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        example: LINK_HOST_NOT_SUPPORTED
+                      message:
+                        type: string
+                        example: This link is not supported.
+    parameters: []
+  /v4/link/delayed:
+    get:
+      summary: This endpoint give the status of a delayed link.
+      description: 'This endpoint give the status of a delayed link. Some links need time to generate, this endpoint send the status of such delayed links. You should pool every 5 seconds or more the link/delayed endpoint until given the download link.'
+      security:
+        - apikey: []
+      parameters:
+        - in: query
+          name: apikey
+          schema:
+            type: string
+          required: false
+          description: Deprecated User apikey (Use Bearer Auth in header).
+        - in: query
+          name: agent
+          schema:
+            type: string
+            default: open-alldebrid
+          required: true
+          description: Your software user-agent.
+        - in: query
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Delayed ID received in /link/unlock.
+      responses:
+        '200':
+          description: This endpoint retrieves a complete list of all available hosts for this user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: integer
+                        format: int64
+                        example: 2
+                      time_left:
+                        type: integer
+                        format: int64
+                        example: 0
+                      link:
+                        type: string
+                        example: 'http://ombfyx.alld.io/dl/abcdefgh12/ubuntu-16.04.1-server-amd64.iso'
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        example: DELAYED_INVALID_ID
+                      message:
+                        type: string
+                        example: This delayed link id is invalid.
+    parameters: []
+  /v4/magnet/upload:
+    get:
+      summary: Upload a magnet with its URI or hash.
+      description: 'Upload a magnet with its URI or hash. You can either send the magnets in GET parameters, or in POST.'
+      security:
+        - apikey: []
+      parameters:
+        - in: query
+          name: apikey
+          schema:
+            type: string
+          required: false
+          description: Deprecated User apikey (Use Bearer Auth in header).
+        - in: query
+          name: agent
+          schema:
+            type: string
+            default: open-alldebrid
+          required: true
+          description: Your software user-agent.
+        - in: query
+          name: 'magnets[]'
+          description: Magnet(s) URI or hash. Must send magnet either in GET param or in POST data.
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: This endpoint retrieves a complete list of all available hosts for this user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      magnets:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            magnet:
+                              type: string
+                              example: 'magnet:?xt=urn:btih:842783e3005495d5d1637f5364b59343c7844707&dn=ubuntu-18.04.2-live-server-amd64.iso'
+                            hash:
+                              type: string
+                              example: 842783e3005495d5d1637f5364b59343c7844707
+                            name:
+                              type: string
+                              example: ubuntu-18.04.2-live-server-amd64.iso
+                            size:
+                              type: integer
+                              format: int64
+                              example: 875773970
+                            ready:
+                              type: boolean
+                            id:
+                              type: integer
+                              format: int64
+                              example: 123456
+                            error:
+                              type: object
+                              properties:
+                                code:
+                                  type: string
+                                  example: MAGNET_INVALID_URI
+                                message:
+                                  type: string
+                                  example: Magnet is not valid
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        example: AUTH_BAD_APIKEY
+                      message:
+                        type: string
+                        example: The auth apikey is invalid.
+    parameters: []
+  /v4/magnet/upload/file:
+    post:
+      summary: Upload torrent files.
+      description: Upload torrent files.<br /> This endpoint should be POSTed on.<br /> It expects a multipart formdata file upload.<br />
+      security:
+        - apikey: []
+      parameters:
+        - in: query
+          name: apikey
+          schema:
+            type: string
+          required: false
+          description: Deprecated User apikey (Use Bearer Auth in header).
+        - in: query
+          name: agent
+          schema:
+            type: string
+            default: open-alldebrid
+          required: true
+          description: Your software user-agent.
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                'files[]':
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: This endpoint retrieves a complete list of all available hosts for this user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      files:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            file:
+                              type: string
+                              example: 'magnet:?xt=urn:btih:842783e3005495d5d1637f5364b59343c7844707&dn=ubuntu-18.04.2-live-server-amd64.iso'
+                            hash:
+                              type: string
+                              example: 842783e3005495d5d1637f5364b59343c7844707
+                            name:
+                              type: string
+                              example: ubuntu-18.04.2-live-server-amd64.iso
+                            size:
+                              type: integer
+                              format: int64
+                              example: 875773970
+                            ready:
+                              type: boolean
+                            id:
+                              type: integer
+                              format: int64
+                              example: 123456
+                            error:
+                              type: object
+                              properties:
+                                code:
+                                  type: string
+                                  example: MAGNET_INVALID_FILE
+                                message:
+                                  type: string
+                                  example: File is not a valid torrent.
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        example: AUTH_BAD_APIKEY
+                      message:
+                        type: string
+                        example: The auth apikey is invalid.
+    parameters: []
+  /v4.1/magnet/status:
+    get:
+      summary: 'Get the status of current magnets, or only one if you specify a magnet ID.'
+      description: |-
+        Get the status of current magnets, or only one if you specify a magnet ID.
+
+        - Live Mode:
+
+        The Live Mode allows to only get the new data of the status of current magnets. It is designed to make a "live" panel or monitoring system more performant when consuming the magnet/status endpoint very frequently.
+
+        It requires a session ID and a counter, and using cache on the API side only the differences between the last state and the current state are sent, greatly reducing the amount of data returned by the API on each call.
+
+        The client using this mode must keep the current state of the magnets status locally between each call in order to apply the new data on the last state to get the whole current state.
+
+        A fixed session ID (integer) must be randomly set, and a counter starting at 0 will be used. On the first call (id=123, counter=0) with a new session ID, all the current data will be sent back, with the fullsync property set to true to make it clear, and the next counter to use. On the next call the updated counter is used (id=123, counter=1), and only the differences with the previous state will be send back.
+
+        If the magnets property returned is empty, then no change happened since the last call. If some changes happened, the magnets array will have some magnet objects (see Status) with its id and the properties changed, like this:
+
+        `{ "id": 123456, "downloaded": 258879224, "downloadSpeed": 20587738 }`
+
+        You can them apply those diff to the last state you kept to get the current magnets status state.
+
+        If you send a counter that is not in sync with the last call response (like sending the same counter twice in a row), then the endpoint will consider your counter invalid and will return a full fullsync reponse with a reseted counter.
+      security: []
+      parameters:
+        - in: query
+          name: apikey
+          schema:
+            type: string
+          required: false
+          description: Deprecated User apikey (Use Bearer Auth in header).
+        - in: query
+          name: agent
+          schema:
+            type: string
+            default: open-alldebrid
+          required: true
+          description: Your software user-agent.
+        - in: query
+          name: id
+          schema:
+            type: string
+          required: false
+          description: Magnet ID.
+        - in: query
+          name: status
+          schema:
+            type: string
+          required: false
+          description: 'Magnets status filter. Either active, ready, expired or error'
+        - in: query
+          name: session
+          schema:
+            type: string
+          required: false
+          description: Session ID for Live mode (see Live Mode).
+        - in: query
+          name: counter
+          schema:
+            type: string
+          required: false
+          description: Counter for Live mode (see Live Mode).
+      responses:
+        '200':
+          description: 'Get the status of current magnets, or only one if you specify a magnet ID.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      magnets:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              format: int64
+                              example: 56789
+                            filename:
+                              type: string
+                              example: ubuntu-20.04.2-live-server-amd64.iso
+                            size:
+                              type: integer
+                              format: int64
+                              example: 256400192
+                            status:
+                              type: string
+                              example: Ready
+                            statusCode:
+                              type: integer
+                              format: int64
+                              example: 4
+                            downloaded:
+                              type: integer
+                              format: int64
+                              example: 256400192
+                            uploaded:
+                              type: integer
+                              format: int64
+                              example: 0
+                            seeders:
+                              type: integer
+                              format: int64
+                              example: 12
+                            downloadSpeed:
+                              type: integer
+                              format: int64
+                              example: 0
+                            uploadSpeed:
+                              type: integer
+                              format: int64
+                              example: 0
+                            uploadDate:
+                              type: integer
+                              format: int64
+                              example: 1657133868
+                            completionDate:
+                              type: integer
+                              format: int64
+                              example: 1657133968
+                            links:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  link:
+                                    type: string
+                                    example: 'http://uptobox.com/aaaabbbbzzzz'
+                                  filename:
+                                    type: string
+                                    example: ubuntu-20.04.2-live-server-amd64.iso
+                                  size:
+                                    type: integer
+                                    format: int64
+                                    example: 256458252
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        example: AUTH_BAD_APIKEY
+                      message:
+                        type: string
+                        example: The auth apikey is invalid.
+    parameters: []
+  /v4/magnet/files:
+    get:
+      summary: Get Files and Links
+      description: Returns the files and links of a magnet.
+      security: []
+      parameters:
+        - in: query
+          name: apikey
+          schema:
+            type: string
+          required: false
+          description: Deprecated User apikey (Use Bearer Auth in header).
+        - in: query
+          name: agent
+          schema:
+            type: string
+            default: open-alldebrid
+          required: true
+          description: Your software user-agent.
+        - in: query
+          name: id
+          schema:
+            type: string
+          required: false
+          description: Magnet ID.
+        - in: query
+          name: status
+          schema:
+            type: string
+          required: false
+          description: 'Magnets status filter. Either active, ready, expired or error'
+        - in: query
+          name: session
+          schema:
+            type: string
+          required: false
+          description: Session ID for Live mode (see Live Mode).
+        - in: query
+          name: counter
+          schema:
+            type: string
+          required: false
+          description: Counter for Live mode (see Live Mode).
+      responses:
+        '200':
+          description: This endpoint retrieves a complete list of all available hosts for this user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      magnets:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              format: int64
+                              example: 56789
+                            filename:
+                              type: string
+                              example: ubuntu-20.04.2-live-server-amd64.iso
+                            size:
+                              type: integer
+                              format: int64
+                              example: 256400192
+                            status:
+                              type: string
+                              example: Ready
+                            statusCode:
+                              type: integer
+                              format: int64
+                              example: 4
+                            downloaded:
+                              type: integer
+                              format: int64
+                              example: 256400192
+                            uploaded:
+                              type: integer
+                              format: int64
+                              example: 0
+                            seeders:
+                              type: integer
+                              format: int64
+                              example: 12
+                            downloadSpeed:
+                              type: integer
+                              format: int64
+                              example: 0
+                            uploadSpeed:
+                              type: integer
+                              format: int64
+                              example: 0
+                            uploadDate:
+                              type: integer
+                              format: int64
+                              example: 1657133868
+                            completionDate:
+                              type: integer
+                              format: int64
+                              example: 1657133968
+                            links:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  link:
+                                    type: string
+                                    example: 'http://uptobox.com/aaaabbbbzzzz'
+                                  filename:
+                                    type: string
+                                    example: ubuntu-20.04.2-live-server-amd64.iso
+                                  size:
+                                    type: integer
+                                    format: int64
+                                    example: 256458252
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        example: AUTH_BAD_APIKEY
+                      message:
+                        type: string
+                        example: The auth apikey is invalid.
+    parameters: []
+  /v4/magnet/delete:
+    get:
+      summary: Delete a magnet.
+      description: Delete a magnet.
+      security: []
+      parameters:
+        - in: query
+          name: apikey
+          schema:
+            type: string
+          required: false
+          description: Deprecated User apikey (Use Bearer Auth in header).
+        - in: query
+          name: agent
+          schema:
+            type: string
+            default: open-alldebrid
+          required: true
+          description: Your software user-agent.
+        - in: query
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Magnet ID.
+      responses:
+        '200':
+          description: This endpoint retrieves a complete list of all available hosts for this user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Magnet was successfully deleted
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        example: MAGNET_INVALID_ID
+                      message:
+                        type: string
+                        example: Magnet ID is invalid.
+    parameters: []
+  /v4/magnet/restart:
+    get:
+      summary: 'Restart a failed magnet, or multiple failed magnets at once.'
+      description: 'Restart a failed magnet, or multiple failed magnets at once.'
+      security: []
+      parameters:
+        - in: query
+          name: apikey
+          schema:
+            type: string
+          required: false
+          description: Deprecated User apikey (Use Bearer Auth in header).
+        - in: query
+          name: agent
+          schema:
+            type: string
+            default: open-alldebrid
+          required: true
+          description: Your software user-agent.
+        - in: query
+          name: id
+          required: true
+          description: Magnet ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: This endpoint retrieves a complete list of all available hosts for this user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      magnets:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            magnet:
+                              type: string
+                              example: 81951197
+                            message:
+                              type: string
+                              example: Magnet was successfully restarted
+                            error:
+                              type: object
+                              properties:
+                                code:
+                                  type: string
+                                  example: MAGNET_PROCESSING
+                                message:
+                                  type: string
+                                  example: Magnet is processing or complete
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        example: MAGNET_INVALID_ID
+                      message:
+                        type: string
+                        example: Magnet ID is invalid.
+    parameters: []
+  /v4/user/links:
+    get:
+      summary: Use this endpoint to get links the user saved for later use.
+      description: Use this endpoint to get links the user saved for later use.
+      security: []
+      parameters:
+        - in: query
+          name: apikey
+          schema:
+            type: string
+          required: false
+          description: Deprecated User apikey (Use Bearer Auth in header).
+        - in: query
+          name: agent
+          schema:
+            type: string
+            default: open-alldebrid
+          required: true
+          description: Your software user-agent.
+      responses:
+        '200':
+          description: This endpoint retrieves a complete list of all available hosts for this user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      links:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            link:
+                              type: string
+                              example: 'https://uptobox.com/fx8sx9hcn18s'
+                            filename:
+                              type: string
+                              example: ubuntu-16.04.6-desktop-amd64.iso
+                            size:
+                              type: integer
+                              format: int64
+                              example: 751267520
+                            date:
+                              type: integer
+                              format: int64
+                              example: 1569420668
+                            host:
+                              type: string
+                              example: uptobox
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        example: AUTH_BAD_APIKEY
+                      message:
+                        type: string
+                        example: The auth apikey is invalid.
+    parameters: []
+  /v4/user/links/save:
+    get:
+      summary: Save a link.
+      description: Save a link.
+      security: []
+      parameters:
+        - in: query
+          name: apikey
+          schema:
+            type: string
+          required: false
+          description: Deprecated User apikey (Use Bearer Auth in header).
+        - in: query
+          name: agent
+          schema:
+            type: string
+            default: open-alldebrid
+          required: true
+          description: Your software user-agent.
+        - in: query
+          name: 'link[]'
+          description: Links to save.
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: This endpoint retrieves a complete list of all available hosts for this user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Link was successfully saved
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        example: AUTH_BAD_APIKEY
+                      message:
+                        type: string
+                        example: The auth apikey is invalid.
+    parameters: []
+  /v4/user/links/delete:
+    get:
+      summary: Delete a saved link.
+      description: Delete a saved link.
+      security: []
+      parameters:
+        - in: query
+          name: apikey
+          schema:
+            type: string
+          required: false
+          description: Deprecated User apikey (Use Bearer Auth in header).
+        - in: query
+          name: agent
+          schema:
+            type: string
+            default: open-alldebrid
+          required: true
+          description: Your software user-agent.
+        - in: query
+          name: link
+          schema:
+            type: string
+          required: false
+          description: Link to delete.
+        - in: query
+          name: 'link[]'
+          description: Links to delete.
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: This endpoint retrieves a complete list of all available hosts for this user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Link was successfully deleted
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        example: AUTH_BAD_APIKEY
+                      message:
+                        type: string
+                        example: The auth apikey is invalid.
+    parameters: []
+  /v4/user/history:
+    get:
+      summary: Use this endpoint to get recent links.
+      description: 'Use this endpoint to get recent links. Recent link logging being disabled by default, this will return nothing until history logging has been activated in your account settings. Links older than 3 days are automatically deleted from the recent history. To keep links in your account, use the Saved links.'
+      security: []
+      parameters:
+        - in: query
+          name: apikey
+          schema:
+            type: string
+          required: false
+          description: Deprecated User apikey (Use Bearer Auth in header).
+        - in: query
+          name: agent
+          schema:
+            type: string
+            default: open-alldebrid
+          required: true
+          description: Your software user-agent.
+      responses:
+        '200':
+          description: This endpoint retrieves a complete list of all available hosts for this user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      links:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            link:
+                              type: string
+                              example: 'https://uptobox.com/fx8sx9hcn18s'
+                            filename:
+                              type: string
+                              example: ubuntu-16.04.6-desktop-amd64.iso
+                            size:
+                              type: integer
+                              format: int64
+                              example: 751267520
+                            date:
+                              type: integer
+                              format: int64
+                              example: 1569420668
+                            host:
+                              type: string
+                              example: uptobox
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        example: AUTH_BAD_APIKEY
+                      message:
+                        type: string
+                        example: The auth apikey is invalid.
+    parameters: []
+  /v4/user/history/delete:
+    get:
+      summary: Use this endpoint to delete all links currently in your recent links history.
+      description: Use this endpoint to delete all links currently in your recent links history. Links older than 3 days are automatically deleted from the recent history.
+      security: []
+      parameters:
+        - in: query
+          name: apikey
+          schema:
+            type: string
+          required: false
+          description: Deprecated User apikey (Use Bearer Auth in header).
+        - in: query
+          name: agent
+          schema:
+            type: string
+            default: open-alldebrid
+          required: true
+          description: Your software user-agent.
+      responses:
+        '200':
+          description: This endpoint retrieves a complete list of all available hosts for this user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Links were successfully deleted
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        example: AUTH_BAD_APIKEY
+                      message:
+                        type: string
+                        example: The auth apikey is invalid.
+    parameters: []
+components:
+  securitySchemes:
+    apikey:
+      type: http
+      scheme: bearer
+  schemas:
+    ErrorCodes:
+      description: 'You can find all possible errors here, available in PHP array and JSON format if needed.<br /> Some errors will return an HTTP code 401 or 429, depending of the error.<br />'
+      type: string
+      enum:
+        - GENERIC
+        - 404
+        - AUTH_MISSING_AGENT
+        - AUTH_BAD_AGENT
+        - AUTH_MISSING_APIKEY
+        - AUTH_BAD_APIKEY
+        - AUTH_BLOCKED
+        - AUTH_USER_BANNED
+        - LINK_IS_MISSING
+        - LINK_HOST_NOT_SUPPORTED
+        - LINK_DOWN
+        - LINK_PASS_PROTECTED
+        - LINK_HOST_UNAVAILABLE
+        - LINK_TOO_MANY_DOWNLOADS
+        - LINK_HOST_FULL
+        - LINK_HOST_LIMIT_REACHED
+        - LINK_ERROR
+        - REDIRECTOR_NOT_SUPPORTED
+        - REDIRECTOR_ERROR
+        - STREAM_INVALID_GEN_ID
+        - STREAM_INVALID_STREAM_ID
+        - DELAYED_INVALID_ID
+        - FREE_TRIAL_LIMIT_REACHED
+        - MUST_BE_PREMIUM
+        - MAGNET_INVALID_ID
+        - MAGNET_INVALID_URI
+        - MAGNET_INVALID_FILE
+        - MAGNET_FILE_UPLOAD_FAILED
+        - MAGNET_NO_URI
+        - MAGNET_PROCESSING
+        - MAGNET_TOO_MANY_ACTIVE
+        - MAGNET_MUST_BE_PREMIUM
+        - MAGNET_NO_SERVER
+        - MAGNET_TOO_LARGE
+        - PIN_ALREADY_AUTHED
+        - PIN_EXPIRED
+        - PIN_INVALID
+        - USER_LINK_MISSING
+        - USER_LINK_INVALID
+        - NO_SERVER
+        - MISSING_NOTIF_ENDPOINT
